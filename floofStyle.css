@@ -19,19 +19,23 @@ body{
     border-left:50px solid transparent;
 }
 
-#floof{
+#floofTest{
     width:40px;
     position: absolute;
     top:240px;
     left: 190px;
     transition: 0.5s ease-out;
+    display: none;
 }
 
-#floofThoughts{
+.menu{
     display: inline-block;
     background-color: lightgrey;
     border-radius: 15px;
     padding:20px;
+}
+
+#floofThoughts{
     vertical-align: top;
 }
 
@@ -50,4 +54,48 @@ body{
     transition:0.5s ease-out;
     top:0;
     opacity: 1;
+}
+
+label{
+    text-align: center;
+    font-size: small;
+    display: block;
+}
+
+#floof{
+    width:40px;
+    height:30px;
+    position: absolute;
+    top:240px;
+    left:190px;
+    border-radius: 20px 20px 12px 12px;
+    background-color: green;
+    transition: 0.5s ease-out;
+}
+
+#eyeLeft, #eyeRight{
+    width: 5px;
+    height: 8px;
+    position: relative;
+    border-radius: 3px;
+    background-color: black;
+    transition: 0.5s;
+}
+#eyeLeft{
+    left:10px;
+    top:15px;
+}
+#eyeRight{
+    left:35px;
+    top:7px;
+}
+
+#dot{
+    background-color: red;
+    position: absolute;
+    border-radius: 10px/20px;
+    width:20px;
+    height:40px;
+    transition: 0.5s;
+    display: none;
 }
