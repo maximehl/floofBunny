@@ -11,36 +11,35 @@
 
 <div id="screen">
     <div id="floor"></div>
-    <img id="floofTest" src="floofbunny-left.png">
     <div id="floof" data-facing="right" data-x-pos="190" data-y-pos="240">
         <div id="eyeLeft"></div>
         <div id="eyeRight"></div>
     </div>
+    <div id="dot"></div>
 </div>
 
-<div id="floofThoughts" class="menu">
-    <div id="thoughtContainer">
-        <p id="exitThought">Floofbunny is happy to see you!</p>
-        <p id="enterThought">Floofbunny is happy to see you!</p>
+<div id="sideMenus">
+    <div id="floofThoughts" class="menu">
+        <div id="thoughtContainer">
+            <p id="exitThought">Floofbunny is happy to see you!</p>
+            <p id="enterThought">Floofbunny is happy to see you!</p>
+        </div>
+    </div>
+    <br>
+    <div id="floofSettings" class="menu">
+        <label>Name<br><input id="nameSet" type="text" oninput="propChange('name')" value="Floofbunny"></label>
+        <label>Eye size<br><input id="eyeSizeSet" type="range" min="4" max="7.5" step="0.5" value="5.5"
+                                  oninput="propChange('eyeSize')"></label>
+        <label>Eye type<br><input id="eyeTypeSet" type="range" min="0" max="4" step="1" value="0"
+                                  oninput="propChange('eyeType')"></label>
+        <label>Body size<br><input id="bodSizeSet" type="range" min="30" max="50" step="2" value="40"
+                                   oninput="propChange('bodSize')"></label>
+        <label>Body type<br><input id="bodTypeSet" type="range" min="0" max="3" step="1" value="0"
+                                   oninput="propChange('bodType')"></label>
+        <label>Body color<br><input id="bodColSet" type="color" value="#008000" oninput="propChange('bodCol')"></label>
     </div>
 </div>
 
-<div id="floofSettings" class="menu">
-    <label>Name<br><input id="nameSet" type="text" oninput="propChange('name')" value="Floofbunny"></label>
-    <label>Eye size<br><input id="eyeSizeSet" type="range" min="4" max="7.5" step="0.5" value="7.5"
-                              oninput="propChange('eyeSize')"></label> <!--value="5.5"-->
-    <label>Eye type<br><input id="eyeTypeSet" type="range" min="0" max="4" step="1" value="4"
-                              oninput="propChange('eyeType')"></label>
-    <label>Body size<br><input id="bodSizeSet" type="range" min="30" max="50" step="2" value="40"
-                              oninput="propChange('bodSize')"></label>
-    <label>Body type<br><input id="bodTypeSet" type="range" min="0" max="3" step="1" value="0"
-                              oninput="propChange('bodType')"></label>
-    <label>Body color<br><input id="bodColSet" type="color" value="#008000" oninput="propChange('bodCol')"></label>
-</div>
-
-<input type="button" value="Click me!" onclick="randText()">
-
-<div id="dot"></div>
 
 </body>
 </html>

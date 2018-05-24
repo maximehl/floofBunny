@@ -6,25 +6,9 @@
  */
 
 /*floof boundaries
- * old values
- * top left: 85, 195
- * bottom left: 44, 271
- * bottom right: 336, 271
- * top right: 295, 195
- *
- * left side slope: (195-271)/(85-44) = (-76/41)
- * left side equation:  (y - 195) = (-76/41)(x - 85)
- *                      (-41/76)y + 105.1974 + 85 = x
- *                      -0.5395y + 190.1974 = x
- * right side slope: (195-271)/(295-336) = (76/41)
- * right side equation: (y - 195) = (76/41)(x - 295)
- *                      (41/76)y - 105.1974 + 295 = x
- *                      0.5395y + 189.8026 = x
- *
- *
  * actual corners
- * top left: 90, 210
- * bottom left: 40, 300
+ * top left: 90, 210                80, -290
+ * bottom left: 40, 300             30, -200
  * top right: 330, 210
  * bottom right: 380, 300
  *
@@ -53,26 +37,19 @@ $(document).ready(function(){
     propChange("bodType");
     propChange("eyeType");
 
-    $("input").on("click", function(){
+    $("input, .menu").on("click", function(){
         event.stopPropagation();
     });
 
     $(document).mousemove(function(){
         var targetX = event.clientX - 20;
-        /*if(floof.attr("src")==="floofbunny-left.png"){
-            targetX = event.clientX - 15;
-        }else{
-            targetX = event.clientX - 25;
-        }*/
         var leftDist;
-        if(targetX<parseInt(floof.css("left"))){
-            //floof.attr("src", "floofbunny-left.png");
+        if(targetX<parseFloat(floof.css("left"))){
             leftDist = (bodWidth-maxEyeDisp)-(eyeWidth/3);
             eyeLeft.css("left",leftDist);
             eyeRight.css("left",leftDist+eyeSep);
             floof.data("facing", "left");
         }else{
-            //floof.attr("src", "floofbunny-right.png");
             leftDist = maxEyeDisp-(eyeWidth*2/3);
             eyeRight.css("left",leftDist);
             eyeLeft.css("left",leftDist-eyeSep);
@@ -82,7 +59,7 @@ $(document).ready(function(){
 
     $(document).on("click", function(){
         var newX = event.clientX-(bodWidth/2);
-        var newY = event.clientY-(1.2*bodHeight*bodTypeRatios[bodType][5]);
+        var newY = event.clientY-(1.2*bodHeight*bodTypeRatios[bodType][5])-40;
         floof.data({"x-pos":newX, "y-pos":newY});
         checkEdgeCollision(newX, newY);
     });
@@ -107,18 +84,19 @@ function checkEdgeCollision(targetX, targetY){
     }else if(targetX>rightEdgeX){
         targetX = rightEdgeX;
     }
-    floof.css({"left":targetX, "top":targetY});
+    floof.css({"left":targetX-10, "top":targetY-500});
 }
 
 //height/width, border-radius, width multiplier
-var eyeTypeRatios = [[8/5, [3/5], 1], [1, [1], 1], [5/8, [3/5], 8/5], [1.41, [2, 2, 0, 0], 1],
+var eyeTypeRatios = [[8/5, [3/5], 1], [1, [1], 1.4], [5/8, [3/5], 8/5], [1.41, [2, 2, 0, 0], 1],
                     [8/5, [0.5, 0.5, "/", 1, 1], 1]];
 //eye dist. from top (proportion of height), max eye movement, eyeSep (proportion of width),
-// height/width ratio, border-radius, top height proportion (for room movement), side height proportion
-var bodTypeRatios = [[0.65, 1, 5/8, 3/4, [.5, .5, .3, .3], 0.7, 0.95],
-                    [0.5, 0.85, 2/5, 1, [0.2], 0.6, 1],
-                    [0.6, 0.9, 0.6, 1, [1], 0.8, 0.8],
-                    [0.3, 1.1, 0.5, 3/2, [0.3, 0.3, .2, .2, "/", 1, 1, .2, .2], 0.7, 0.95]];
+// height/width ratio, border-radius, top height proportion (for room movement), side height proportion,
+// width multiplier
+var bodTypeRatios = [[0.65, 1, 5/8, 3/4, [.5, .5, .3, .3], 0.7, 0.95, 1],
+                    [0.5, 0.85, 2/5, 1, [0.2], 0.6, 1, 0.9],
+                    [0.6, 0.9, 0.6, 1, [1], 0.8, 0.8, 1],
+                    [0.3, 1.1, 0.5, 3/2, [0.3, 0.3, .2, .2, "/", 1, 1, .2, .2], 0.7, 0.95, 0.7]];
 var bodType = 0;
 var bodWidth = 40;
 var bodHeight = 30;
@@ -130,13 +108,18 @@ var eyeType = 0;
 var newName = "Floofbunny";
 var eyeHeight = 8;
 function propChange(propName) {
+    var curCenterX = parseFloat(floof.css("left"));
+    var curTop = parseFloat(floof.css("top"));
+    var oldHeight = bodHeight;
+    var oldWidth = bodWidth;
+    var oldType = bodType;
     eyeType = parseInt($("#eyeTypeSet").val());
-    eyeWidth = parseInt($("#eyeSizeSet").val())*eyeTypeRatios[eyeType][2];
+    eyeWidth = parseFloat($("#eyeSizeSet").val())*eyeTypeRatios[eyeType][2];
     eyeHeight = eyeWidth*eyeTypeRatios[eyeType][0];
-    setTop = (bodHeight*bodTypeRatios[bodType][0])-(eyeHeight/2);
     bodType = parseInt($("#bodTypeSet").val());
-    bodWidth = parseInt($("#bodSizeSet").val());
+    bodWidth = parseFloat($("#bodSizeSet").val())*bodTypeRatios[bodType][7];
     bodHeight = bodWidth*bodTypeRatios[bodType][3];
+    setTop = (bodHeight*bodTypeRatios[bodType][0])-(eyeHeight/2);
     maxEyeDisp = bodWidth*bodTypeRatios[bodType][1];
     eyeSep = bodWidth*bodTypeRatios[bodType][2];
     switch(propName){
@@ -177,8 +160,11 @@ function propChange(propName) {
             eyeRight.css({"top":setTop-eyeHeight});
             floof.css({"width":bodWidth, "height":bodHeight,
                 "border-radius":multAppendPx(bodTypeRatios[bodType][4], bodWidth)});
-            checkEdgeCollision(parseInt(floof.data("x-pos")), parseInt(floof.data("y-pos")));
-            //tagHere it doesn't move up when you change the body type
+            floof.css({"top":curTop+((oldHeight-bodHeight)), "left":curCenterX+((oldWidth-bodWidth)/2)});
+            var newX = parseFloat(floof.data("x-pos"))+(oldWidth/2)-(bodWidth/2);
+            var newY = parseFloat(floof.data("y-pos"))+(1.2*oldHeight*bodTypeRatios[oldType][5])-(1.2*bodHeight*bodTypeRatios[bodType][5]);
+            floof.data({"x-pos":newX, "y-pos":newY});
+            checkEdgeCollision(newX, newY);
             break;
     }
 }
@@ -195,6 +181,14 @@ function multAppendPx(multRatios, thingWidth){
     return returnSettings;
 }
 
+(function blinkLoop(){
+    var timeWait = Math.floor(Math.random()*6000)+1000;
+    setTimeout(function(){
+        blink();
+        blinkLoop();
+    }, timeWait);
+}());
+
 function blink(){
     eyeProps.css({"height":0.25*eyeHeight, "top":setTop+(eyeHeight*5/8)});
     eyeRight.css("top", setTop+(eyeHeight*3/8));
@@ -204,13 +198,32 @@ function blink(){
     }, 300);
 }
 
-function bounce(){
-    floof.css({"height":0.8*bodHeight, "width":1.2*bodWidth});
+(function bounceLoop(){
+    var timeWait = Math.floor(Math.random()*10000)+2000;
     setTimeout(function(){
-        floof.css({"height":bodHeight, "width":bodWidth});
+        bounce();
+        bounceLoop();
+    }, timeWait);
+}());
+
+function bounce(){
+    var curTop = parseFloat(floof.css("top"));
+    var curLeft = parseFloat(floof.css("left"));
+    floof.css({"height":0.8*bodHeight, "width":1.2*bodWidth, "top":curTop+(0.2*bodHeight), "left":curLeft-(0.1*bodWidth)});
+    setTimeout(function(){
+        floof.css({"height":bodHeight, "width":bodWidth, "top":curTop, "left":curLeft});
     }, 400);
 }
 
+(function thinkLoop(){
+    var timeWait = Math.floor(Math.random()*10000)+10000;
+    setTimeout(function(){
+        randText();
+        thinkLoop();
+    }, timeWait);
+}());
+
+var currentText = 0;
 var texts = ["Floofbunny is happy to see you!",
     "Floofbunny bounces gently from side to side.",
     "Floofbunny bounces gently up and down.",
@@ -221,7 +234,11 @@ var texts = ["Floofbunny is happy to see you!",
     "Floofbunny is glad you have time to come hang out.",
     "Floofbunny would smile, if floofbunny had a mouth."];
 function randText(){
-    nextText(texts[Math.floor(Math.random() * Math.floor(texts.length))]);
+    var prevText = currentText;
+    while(currentText===prevText){
+        currentText = Math.floor(Math.random() * Math.floor(texts.length));
+    }
+    nextText(texts[currentText]);
 }
 
 function nextText(thoughtText){

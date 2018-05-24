@@ -7,6 +7,7 @@ body{
     height:300px;
     border:2px solid black;
     margin-right:20px;
+    margin-top: 40px;
     display: inline-block;
 }
 
@@ -14,6 +15,7 @@ body{
     margin: 50% auto;
     height: 0;
     width: 60%;
+    position: relative;
     border-bottom: 90px solid tan;
     border-right:50px solid transparent;
     border-left:50px solid transparent;
@@ -28,16 +30,24 @@ body{
     display: none;
 }
 
+#sideMenus{
+    display: inline-block;
+    /*width:300px;*/
+    vertical-align: top;
+    text-align: center;
+}
+
 .menu{
     display: inline-block;
     background-color: lightgrey;
     border-radius: 15px;
     padding:20px;
+    margin: 10px 0;
 }
 
-#floofThoughts{
+/*#floofThoughts{
     vertical-align: top;
-}
+}*/
 
 #thoughtContainer{
     overflow: hidden;
@@ -65,9 +75,9 @@ label{
 #floof{
     width:40px;
     height:30px;
-    position: absolute;
-    top:240px;
-    left:190px;
+    position: relative;
+    top:-260px;
+    left:180px;
     border-radius: 20px 20px 12px 12px;
     background-color: green;
     transition: 0.5s ease-out;
@@ -92,10 +102,9 @@ label{
 
 #dot{
     background-color: red;
-    position: absolute;
-    border-radius: 10px/20px;
-    width:20px;
-    height:40px;
+    position: relative;
+    width:5px;
+    height:5px;
     transition: 0.5s;
     display: none;
 }
