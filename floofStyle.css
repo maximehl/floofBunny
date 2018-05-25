@@ -1,5 +1,6 @@
 body{
     font-family: Arial, sans-serif;
+    width: 700px;
 }
 
 #screen{
@@ -8,6 +9,7 @@ body{
     border:2px solid black;
     margin-right:20px;
     margin-top: 40px;
+    vertical-align: middle;
     display: inline-block;
 }
 
@@ -104,11 +106,11 @@ label{
     top:7px;
 }
 
-#dot{
-    background-color: red;
-    position: relative;
-    width:5px;
-    height:5px;
-    transition: 0.5s;
-    display: none;
+#footer{
+    width: 100%;
+    text-align: center;
+    background-color: lightgrey;
+    border-radius: 15px 15px 0 0;
+    vertical-align: bottom;
+    padding: 10px 0;
 }
