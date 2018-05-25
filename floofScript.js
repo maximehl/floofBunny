@@ -36,6 +36,7 @@ $(document).ready(function(){
     eyeProps = $("#eyeLeft, #eyeRight");
     propChange("bodType");
     propChange("eyeType");
+    $("#thoughtContainer").css("height", detReqHeight($("#exitThought")));
 
     $("input, .menu").on("click", function(){
         event.stopPropagation();
@@ -60,8 +61,10 @@ $(document).ready(function(){
     $(document).on("click", function(){
         var newX = event.clientX-(bodWidth/2);
         var newY = event.clientY-(1.2*bodHeight*bodTypeRatios[bodType][5])-40;
-        floof.data({"x-pos":newX, "y-pos":newY});
-        checkEdgeCollision(newX, newY);
+        if(bouncing===0){
+            floof.data({"x-pos":newX, "y-pos":newY});
+            checkEdgeCollision(newX, newY);
+        }
     });
 });
 
@@ -133,7 +136,15 @@ function propChange(propName) {
                 newName + " wonders how you're feeling.",
                 newName + " hopes you're having a good day.",
                 newName + " is glad you have time to come hang out.",
-                newName + " would smile, if floofbunny had a mouth."];
+                newName + " would smile, if " + newName + " had a mouth.",
+                newName + " waits patiently.",
+                newName + " loves you quite a lot.",
+                newName + " thinks you look great today.",
+                newName + " makes an agreeable humming noise.",
+                newName + " hums gently.",
+                newName + " ponders the mysteries of the universe.",
+                newName + " attempts to find the square root of 41.",
+                newName + " travels gradually through the fourth dimension."];
             break;
         case "bodCol":
             floof.css("background-color", $("#bodColSet").val());
@@ -206,12 +217,15 @@ function blink(){
     }, timeWait);
 }());
 
+var bouncing = 0;
 function bounce(){
+    bouncing=1;
     var curTop = parseFloat(floof.css("top"));
     var curLeft = parseFloat(floof.css("left"));
     floof.css({"height":0.8*bodHeight, "width":1.2*bodWidth, "top":curTop+(0.2*bodHeight), "left":curLeft-(0.1*bodWidth)});
     setTimeout(function(){
         floof.css({"height":bodHeight, "width":bodWidth, "top":curTop, "left":curLeft});
+        bouncing=0;
     }, 400);
 }
 
@@ -241,6 +255,7 @@ function randText(){
     nextText(texts[currentText]);
 }
 
+var prevHeight = 70.1818-16;
 function nextText(thoughtText){
     var newText = $("#enterThought");
     var oldText = $("#exitThought");
@@ -252,6 +267,16 @@ function nextText(thoughtText){
     newText.css({"transition":"0s", "top":0, "opacity":0});
     newText.css("transition");
     newText.html(thoughtText);
-    oldText.css({"top":"-3.3em", "opacity":0});
-    newText.css({"transition":"0.8s ease-out", "top":"-3em", "opacity":1});
+    var heightNeeded = detReqHeight(newText)-16;
+    oldText.css({"top":((-1.1*heightNeeded)), "opacity":0});
+    newText.css({"transition":"0.8s ease-out", "top":(-1*prevHeight), "opacity":1});
+    $("#thoughtContainer").css("height", (heightNeeded+16));
+    prevHeight = heightNeeded;
+}
+
+function detReqHeight(objNeeded){
+    var clone = $(objNeeded).clone().css("height", "auto").appendTo("body");
+    var heightNeeded = clone.outerHeight(true);
+    clone.remove();
+    return heightNeeded;
 }

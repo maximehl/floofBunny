@@ -51,15 +51,19 @@ body{
 
 #thoughtContainer{
     overflow: hidden;
-    height:4em;
+    /*height:4em;*/
+    height:64px;
     width:200px;
+    transition:0.5s;
+    padding: 0;
 }
 
 #enterThought, #exitThought{
     display: block;
     position: relative;
-    height:2em;
-    margin:1em 0;
+    /*height:100px;*/
+    width:200px;
+    margin:16px 0;
     text-align: center;
     transition:0.5s ease-out;
     top:0;
