@@ -28,6 +28,7 @@ var floof;
 var eyeLeft;
 var eyeRight;
 var eyeProps;
+const DOCMARGIN = 8;
 
 $(document).ready(function(){
     floof = $("#floof");
@@ -43,9 +44,9 @@ $(document).ready(function(){
     });
 
     $(document).mousemove(function(){
-        var targetX = event.clientX - 20;
+        var targetX = event.clientX - (bodWidth/2);
         var leftDist;
-        if(targetX<parseFloat(floof.css("left"))){
+        if(targetX<(parseFloat(floof.css("left"))+(DOCMARGIN))){
             leftDist = (bodWidth-maxEyeDisp)-(eyeWidth/3);
             eyeLeft.css("left",leftDist);
             eyeRight.css("left",leftDist+eyeSep);
@@ -87,7 +88,7 @@ function checkEdgeCollision(targetX, targetY){
     }else if(targetX>rightEdgeX){
         targetX = rightEdgeX;
     }
-    floof.css({"left":targetX-10, "top":targetY-500});
+    floof.css({"left":targetX-DOCMARGIN, "top":targetY-500});
 }
 
 //height/width, border-radius, width multiplier
@@ -97,9 +98,12 @@ var eyeTypeRatios = [[8/5, [3/5], 1], [1, [1], 1.4], [5/8, [3/5], 8/5], [1.41, [
 // height/width ratio, border-radius, top height proportion (for room movement), side height proportion,
 // width multiplier
 var bodTypeRatios = [[0.65, 1, 5/8, 3/4, [.5, .5, .3, .3], 0.7, 0.95, 1],
-                    [0.5, 0.85, 2/5, 1, [0.2], 0.6, 1, 0.9],
-                    [0.6, 0.9, 0.6, 1, [1], 0.8, 0.8, 1],
-                    [0.3, 1.1, 0.5, 3/2, [0.3, 0.3, .2, .2, "/", 1, 1, .2, .2], 0.7, 0.95, 0.7]];
+                    [0.5, 0.85, 2/5, 1, [0.2], 0.6, 1, 0.8],
+                    [0.6, 0.9, 0.6, 1, [1], 0.8, 0.8, 0.9],
+                    [0.3, 1.1, 0.5, 3/2, [0.3, 0.3, .2, .2, "/", 1, 1, .2, .2], 0.7, 0.95, 0.7],
+                    [0.3, 0.8, 0.4, 0.5, [1], 0.7, 0.9, 1.3],
+                    [0.7, 1, 0.5, 8/5, [1, 1, .4, .4, "/", 3, 3, .4, .4], 0.8, 0.9, 0.7],
+                    [0.4, 1.1, 0.7, 7/5, [2, 2, 2.5, 2.5, "/", 2, 2, 4.2, 4.2], 0.9, 0.7, 0.8]];
 var bodType = 0;
 var bodWidth = 40;
 var bodHeight = 30;

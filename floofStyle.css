@@ -1,6 +1,7 @@
 body{
     font-family: Arial, sans-serif;
     width: 700px;
+    user-select: none;
 }
 
 #screen{
@@ -113,4 +114,14 @@ label{
     border-radius: 15px 15px 0 0;
     vertical-align: bottom;
     padding: 10px 0;
+}
+
+a{
+    color: #0000EE;
+}
+a:visited{
+    color: #0000EE;
+}
+a:hover{
+    color: #00004f;
 }
