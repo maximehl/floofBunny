@@ -1,10 +1,3 @@
-/*center coord: x=210
- * top left: 90, 210
- * top right: 330, 210
- * bottom right: 380, 300
- * bottom left: 40, 210
- */
-
 /*floof boundaries
  * actual corners
  * top left: 90, 210                80, -290
@@ -28,46 +21,91 @@ var floof;
 var eyeLeft;
 var eyeRight;
 var eyeProps;
-const DOCMARGIN = 8;
+const MARLEFT = 8;
 
 $(document).ready(function(){
     floof = $("#floof");
     eyeLeft = $("#eyeLeft");
     eyeRight = $("#eyeRight");
     eyeProps = $("#eyeLeft, #eyeRight");
-    propChange("bodType");
-    propChange("eyeType");
     $("#thoughtContainer").css("height", detReqHeight($("#exitThought")));
 
-    $("input, .menu").on("click", function(){
+    $("input, button, .menu").on("click", function(){
         event.stopPropagation();
     });
 
+    $("#fullScreen").css("z-index", 100);
+    var windowHeight = parseInt($("#fullScreen").height());
+
+    $("#centerBox").css("margin-top", (windowHeight/2)-($("#centerBox").outerHeight()/2)-30);
+
+    $(window).resize(function(){
+        windowHeight = parseInt($("#fullScreen").height());
+        $("#centerBox").css("margin-top", (windowHeight/2)-($("#centerBox").outerHeight()/2)-30);
+    })
+});
+
+function startFloof(){
+    $("#signEmail").text(userEmail);
+
+    propChange("bodType");
+    propChange("eyeType");
+    $("#fullScreen").css("opacity", 0);
+    setTimeout(function(){
+        $("#fullScreen").css("z-index", -100);
+    }, 1000);
+
     $(document).mousemove(function(){
-        var targetX = event.clientX - (bodWidth/2);
-        var leftDist;
-        if(targetX<(parseFloat(floof.css("left"))+(DOCMARGIN))){
-            leftDist = (bodWidth-maxEyeDisp)-(eyeWidth/3);
-            eyeLeft.css("left",leftDist);
-            eyeRight.css("left",leftDist+eyeSep);
-            floof.data("facing", "left");
-        }else{
-            leftDist = maxEyeDisp-(eyeWidth*2/3);
-            eyeRight.css("left",leftDist);
-            eyeLeft.css("left",leftDist-eyeSep);
-            floof.data("facing", "right");
+        if(canBounce===0){
+            checkEyeDirec();
         }
     });
 
     $(document).on("click", function(){
+        canBounce++;
         var newX = event.clientX-(bodWidth/2);
         var newY = event.clientY-(1.2*bodHeight*bodTypeRatios[bodType][5])-40;
-        if(bouncing===0){
+        //tagHere: the 40 above needs to be whatever #screen's margin-top is
+        if(canBounce===1){
+            checkEyeDirec();
             floof.data({"x-pos":newX, "y-pos":newY});
             checkEdgeCollision(newX, newY);
+            dropFood(event.clientX, event.clientY);
+
+            setTimeout(function(){
+                bounce();
+            }, 500);
+
+            setTimeout(function(){
+                //foods[0].css("width", 0);
+                foods[0].remove();
+                foods = [];
+            }, 900);
+
+            setTimeout(function(){
+                canBounce--;
+            }, 1300);
+        }else{
+            canBounce--;
         }
     });
-});
+}
+
+function checkEyeDirec(){
+    var targetX = event.clientX - (bodWidth/2);
+    var leftDist;
+    if(targetX<(parseFloat(floof.css("left"))+(MARLEFT))){
+        leftDist = (bodWidth-maxEyeDisp)-(eyeWidth/3);
+        eyeLeft.css("left",leftDist);
+        eyeRight.css("left",leftDist+eyeSep);
+        floof.data("facing", "left");
+    }else{
+        leftDist = maxEyeDisp-(eyeWidth*2/3);
+        eyeRight.css("left",leftDist);
+        eyeLeft.css("left",leftDist-eyeSep);
+        floof.data("facing", "right");
+    }
+}
 
 function checkEdgeCollision(targetX, targetY){
     var bottomEdge = 300 - bodHeight - 3;
@@ -88,7 +126,9 @@ function checkEdgeCollision(targetX, targetY){
     }else if(targetX>rightEdgeX){
         targetX = rightEdgeX;
     }
-    floof.css({"left":targetX-DOCMARGIN, "top":targetY-500});
+    /*var moveDist = Math.sqrt(((parseFloat(floof.css("top"))-(targetY-500))^2) + ((parseFloat(floof.css("left"))-(targetX-MARLEFT))^2));
+    console.log(moveDist);*/
+    floof.css({"left":targetX-MARLEFT, "top":targetY-500});
 }
 
 //height/width, border-radius, width multiplier
@@ -182,6 +222,20 @@ function propChange(propName) {
             checkEdgeCollision(newX, newY);
             break;
     }
+
+    var storeData = new Attributes(userEmail,  $("#nameSet").val(), $("#eyeSizeSet").val(), $("#eyeTypeSet").val(),
+        $("#bodSizeSet").val(), $("#bodTypeSet").val());
+
+    AJAXCall("PUT", "https://slkidsbackend.herokuapp.com/floofbunny/api/bunnies/" + userEmail, "updateBun", JSON.stringify(storeData));
+}
+
+function Attributes(userEmail, bunName, eyeSize, eyeType, bodySize, bodyType){
+    this.email = userEmail;
+    this.bunName = bunName;
+    this.eyeSize = eyeSize;
+    this.eyeType = eyeType;
+    this.bodySize = bodySize;
+    this.bodyType = bodyType;
 }
 
 function multAppendPx(multRatios, thingWidth){
@@ -216,21 +270,94 @@ function blink(){
 (function bounceLoop(){
     var timeWait = Math.floor(Math.random()*10000)+2000;
     setTimeout(function(){
-        bounce();
+        if(canBounce===0){
+            bounce();
+        }
         bounceLoop();
     }, timeWait);
 }());
 
+var canBounce = 0;
 var bouncing = 0;
 function bounce(){
     bouncing=1;
+    canBounce++;
     var curTop = parseFloat(floof.css("top"));
     var curLeft = parseFloat(floof.css("left"));
     floof.css({"height":0.8*bodHeight, "width":1.2*bodWidth, "top":curTop+(0.2*bodHeight), "left":curLeft-(0.1*bodWidth)});
     setTimeout(function(){
         floof.css({"height":bodHeight, "width":bodWidth, "top":curTop, "left":curLeft});
         bouncing=0;
+        canBounce--;
     }, 400);
+}
+
+var foods = [];
+function dropFood(locX, locY){
+    var objID=foods.length;
+    var tempObj = "<div class='food' id='food" + objID + "'></div>";
+    $(tempObj).appendTo($("#screen"));
+    foods[objID] = $("#food" + objID);
+    var foodSide = (Math.floor(Math.random()*300)/100)+4;
+
+    /*center coord: x=210
+     * top left: 90, 250
+     * top right: 330, 250
+     * bottom right: 380, 340
+     * bottom left: 40, 340
+     *
+     * left side slope: (340-250)/(40-90) = (-9/5)
+     * left side equation:  (y - 250) = (-9/5)(x - 90)
+     *                      (-5/9)y + (5/9)250 = x - 90
+     *                      (-5/9)y + 138.88889 + 90 = x
+     *                      -0.5555y + 228.8889 = x
+     * right side slope: (9/5)
+     * right side equation: (y - 250) = (-9/5)(x - 330)
+     *                      (5/9)y - (5/9)250 = x - 330
+     *                      (5/9)y - 138.88889 + 330 = x
+     *                      0.5555y + 191.1111 = x
+     */
+
+    var bottomEdge = 340 - 5;
+    var topEdge = 250 + (bodHeight*(1-bodTypeRatios[bodType][5])) - 3;
+    if(locY>bottomEdge){
+        locY = bottomEdge;
+    }else if(locY<topEdge){
+        locY = topEdge;
+    }
+
+    locX += (Math.floor(Math.random()*10)-5)-(foodSide/2);
+    var leftEdgeX = (-0.5555*(locY+bodHeight)) + 241.6667;
+    var rightEdgeX = (0.5555*(locY+bodHeight)) + 213.3333;
+    /*var leftEdgeX = (-0.5555*(locY+bodHeight)) + 228.8889;
+    var rightEdgeX = (0.5555*(locY+bodHeight)) + 191.1111;*/
+    leftEdgeX+=3-(bodWidth*(1-bodTypeRatios[bodType][6]));
+    rightEdgeX-=(bodWidth*bodTypeRatios[bodType][6])+3;
+    //now they do
+    if(locX<leftEdgeX){
+        locX = leftEdgeX;
+    }else if(locX>rightEdgeX){
+        locX = rightEdgeX;
+    }
+
+    //locY += (Math.floor(Math.random()*10)-30)-(foodSide/2);
+    foods[objID].css({"width":foodSide, "height":foodSide, "border-radius":foodSide/2,
+        "top":locY+(Math.floor(Math.random()*10)-30)-(foodSide/2), "left":locX});
+    //console.log(foods[objID].css("transition"));
+    //foods[objID].css("transition", "top 0.6s 0s cubic-bezier(0.54, -0.68, 1, 0.72), opacity 0.2s 0s linear");
+    var testProp = "top " + ((Math.floor(Math.random()*30)/100)+0.3).toString() + "s 0s cubic-bezier("
+        + ((Math.floor(Math.random()*15)/100)+0.55).toString() + ", " + ((Math.floor(Math.random()*40)/100)-0.9).toString()
+        + ", 1, 1), opacity 0.2s 0s linear";
+    foods[objID].css("transition", testProp);
+    foods[objID].css("transition");
+    foods[objID].css({"top":locY+(Math.floor(Math.random()*7)-5), "opacity":1});
+}
+
+function delFoods(){
+    for(var n = 0; n<foods.length; n++){
+        foods[n].remove();
+    }
+    foods=[];
 }
 
 (function thinkLoop(){
@@ -283,4 +410,120 @@ function detReqHeight(objNeeded){
     var heightNeeded = clone.outerHeight(true);
     clone.remove();
     return heightNeeded;
+}
+
+
+var userEmail;
+//var userID;
+var userPass;
+
+function getFloof(){
+    $(".error").css("display", "none");
+
+    userEmail = $("#existEmail").val();
+    userPass = $("#existPassword").val();
+
+    AJAXCall("GET", 'https://slkidsbackend.herokuapp.com/floofbunny/api/users/' + userEmail, "signIn");
+}
+
+function loadFloof(data){
+    $("#nameSet").val(data["bunName"]);
+    $("#eyeSizeSet").val(data["eyeSize"]);
+    $("#eyeTypeSet").val(data["eyeType"]);
+    $("#bodSizeSet").val(data["bodSize"]);
+    $("#bodTypeSet").val(data["bodType"]);
+    $("#bodColSet").val(data["bodyColor"]);
+
+    startFloof();
+}
+
+function newUser(){
+    $(".error").css("display", "none");
+    userEmail = $("#newEmail").val();
+    userPass = $("#newPassword").val();
+
+    AJAXCall("GET", 'https://slkidsbackend.herokuapp.com/floofbunny/api/users/' + userEmail, "newUser");
+    //if data is empty, userEmail doesn't exist
+}
+
+function AJAXCall(getPost, loc, action, postData){
+    if(getPost==="POST"){
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            data: postData,
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+                //this is unnecessary because we never use id anywhere
+                /*if(action==="newUser"){
+                    userID = data["_id"];
+                }else if(action==="newBun"){
+                    //not necessary at the moment
+                }*/
+
+                startFloof();
+            },
+            error: function(){
+                alert("failed");
+            },
+            url: loc
+        });
+    }else if(getPost==="GET"){
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+
+                if(action==="signIn"){
+                    if($.isEmptyObject(data)){
+                        $("#signError").css("display", "inline-block");
+                    }else{
+                        if(data.password === userPass){
+                            //will this cause errors? tagHere get floof data using userEmail
+                            //loadFloof(data);
+                            startFloof();
+                        }else{
+                            $("#passError").css("display", "inline-block");
+                        }
+                    }
+                }else {
+                    if ($.isEmptyObject(data)) {
+                        AJAXCall("POST", "https://slkidsbackend.herokuapp.com/floofbunny/api/users", "newUser",
+                            JSON.stringify({"email": userEmail, "password": userPass}));
+                        //then it's fine to sign in
+                        //tagHere: this is where you generate your default values in floofbunny database
+                        var storeData = new Attributes(userEmail,  $("#nameSet").val(), $("#eyeSizeSet").val(),
+                            $("#eyeTypeSet").val(), $("#bodSizeSet").val(), $("#bodTypeSet").val());
+
+                        AJAXCall("PUT", "https://slkidsbackend.herokuapp.com/floofbunny/api/bunnies/", "newBun",
+                            JSON.stringify(storeData));
+
+                        startFloof();
+                    } else {
+                        $("#createError").css("display", "inline-block");
+                    }
+                }
+            },
+            error: function(){
+                alert("failed");
+            },
+            url: loc
+        });
+    }else if(getPost==="PUT"){
+        $.ajax({
+            type: 'PUT',
+            contentType: 'application/json',
+            data: postData,
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+            },
+            error: function(){
+                alert("failed");
+            },
+            url: loc
+        });
+    }
 }
