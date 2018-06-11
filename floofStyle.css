@@ -75,6 +75,12 @@ button{
     width: auto;
 }
 
+.loadGIF{
+    width:30px;
+    margin-top: 10px;
+    display: none;
+}
+
 .menu{
     display: inline-block;
     background-color: lightgrey;

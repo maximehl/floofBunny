@@ -14,14 +14,16 @@
         <h1>Welcome!</h1>
         <p>Please sign in to your floofbunny.</p>
         <label>Floofbunny username: <input type="text" id="existEmail"></label>
-        <label>Floofbunny password: <input type="text" id="existPassword"></label>
+        <label>Floofbunny password: <input type="password" id="existPassword"></label>
         <div id="passError" class="error">Error: incorrect password.</div>
-        <div id="signError" class="error">Error: This username does not exist.</div><br>
+        <div id="signError" class="error">Error: This username does not exist.</div>
+        <img id="signInLoad" class="loadGIF" src="https://zippy.gfycat.com/SkinnySeveralAsianlion.gif"><br>
         <button onclick="getFloof()">Sign in!</button>
         <p>Or create a new floofbunny:</p>
         <label>Please enter your username: <input type="text" id="newEmail"></label>
         <label>And your password: <input type="text" id="newPassword"></label>
-        <div id="createError" class="error">Error: this username already exists.</div><br>
+        <div id="createError" class="error">Error: this username already exists.</div>
+        <img id="createAccountLoad" class="loadGIF" src="https://zippy.gfycat.com/SkinnySeveralAsianlion.gif"><br>
         <button onclick="newUser()">Sign in!</button>
     </div>
 </div>

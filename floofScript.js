@@ -223,10 +223,12 @@ function propChange(propName) {
             break;
     }
 
+    /*Otis bailed and he owns the backend, so....
+
     var storeData = new Attributes(userEmail,  $("#nameSet").val(), $("#eyeSizeSet").val(), $("#eyeTypeSet").val(),
         $("#bodSizeSet").val(), $("#bodTypeSet").val());
 
-    AJAXCall("PUT", "https://slkidsbackend.herokuapp.com/floofbunny/api/bunnies/" + userEmail, "updateBun", JSON.stringify(storeData));
+    AJAXCall("PUT", "https://slkidsbackend.herokuapp.com/floofbunny/api/bunnies/" + userEmail, "updateBun", JSON.stringify(storeData));*/
 }
 
 function Attributes(userEmail, bunName, eyeSize, eyeType, bodySize, bodyType){
@@ -418,6 +420,7 @@ var userEmail;
 var userPass;
 
 function getFloof(){
+    $("#signInLoad").show();
     $(".error").css("display", "none");
 
     userEmail = $("#existEmail").val();
@@ -438,6 +441,7 @@ function loadFloof(data){
 }
 
 function newUser(){
+    $("#createAccountLoad").show();
     $(".error").css("display", "none");
     userEmail = $("#newEmail").val();
     userPass = $("#newPassword").val();
@@ -454,6 +458,7 @@ function AJAXCall(getPost, loc, action, postData){
             data: postData,
             dataType: 'json',
             success: function(data){
+                $("#createAccountLoad").hide();
                 console.log(data);
                 //this is unnecessary because we never use id anywhere
                 /*if(action==="newUser"){
@@ -465,7 +470,7 @@ function AJAXCall(getPost, loc, action, postData){
                 startFloof();
             },
             error: function(){
-                alert("failed");
+                alert("Sorry, there seems to have been an error.");
             },
             url: loc
         });
@@ -477,6 +482,7 @@ function AJAXCall(getPost, loc, action, postData){
                 console.log(data);
 
                 if(action==="signIn"){
+                    $("#signInLoad").hide();
                     if($.isEmptyObject(data)){
                         $("#signError").css("display", "inline-block");
                     }else{
@@ -494,11 +500,13 @@ function AJAXCall(getPost, loc, action, postData){
                             JSON.stringify({"email": userEmail, "password": userPass}));
                         //then it's fine to sign in
                         //tagHere: this is where you generate your default values in floofbunny database
+
+                        /*tagHere Otis bailed
                         var storeData = new Attributes(userEmail,  $("#nameSet").val(), $("#eyeSizeSet").val(),
                             $("#eyeTypeSet").val(), $("#bodSizeSet").val(), $("#bodTypeSet").val());
 
                         AJAXCall("PUT", "https://slkidsbackend.herokuapp.com/floofbunny/api/bunnies/", "newBun",
-                            JSON.stringify(storeData));
+                            JSON.stringify(storeData));*/
 
                         startFloof();
                     } else {
@@ -507,7 +515,7 @@ function AJAXCall(getPost, loc, action, postData){
                 }
             },
             error: function(){
-                alert("failed");
+                alert("Sorry, there seems to have been an error.");
             },
             url: loc
         });
@@ -521,7 +529,7 @@ function AJAXCall(getPost, loc, action, postData){
                 console.log(data);
             },
             error: function(){
-                alert("failed");
+                alert("Sorry, there seems to have been an error.");
             },
             url: loc
         });
